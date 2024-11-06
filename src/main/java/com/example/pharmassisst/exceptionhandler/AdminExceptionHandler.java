@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.example.pharmassisst.exception.AdminNotFoundByIdException;
 import com.example.pharmassisst.exception.NoAdminsFoundException;
 import com.example.pharmassisst.utility.AppResponseBuilder;
 import com.example.pharmassisst.utility.ErrorStructure;
@@ -23,6 +24,12 @@ public class AdminExceptionHandler {
 	public ResponseEntity<ErrorStructure> handleNoAdminsFound(NoAdminsFoundException ex) {
 
 		return responseBuilder.error(HttpStatus.NOT_FOUND,ex.getMessage(),"No admins found based on the criteria");
+	}
+	
+	@ExceptionHandler(AdminNotFoundByIdException.class)
+	public ResponseEntity<ErrorStructure> handleAdminNotFoundById(AdminNotFoundByIdException ex) {
+		
+		return responseBuilder.error(HttpStatus.NOT_FOUND,ex.getMessage(),"Admin is not found by Id");
 	}
 
 }
