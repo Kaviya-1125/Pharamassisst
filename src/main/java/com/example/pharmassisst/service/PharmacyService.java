@@ -6,6 +6,7 @@ import com.example.pharmassisst.entity.Admin;
 import com.example.pharmassisst.entity.Pharmacy;
 import com.example.pharmassisst.exception.AdminNotFoundByIdException;
 import com.example.pharmassisst.exception.NoPharmacyFoundException;
+import com.example.pharmassisst.exception.PharmacyNotFoundByIdException;
 import com.example.pharmassisst.mapper.PharmacyMapper;
 import com.example.pharmassisst.repository.AdminRepository;
 import com.example.pharmassisst.repository.PharmacyRepository;
@@ -41,6 +42,7 @@ public class PharmacyService {
 				})
 				.orElseThrow(() ->new AdminNotFoundByIdException("Failed to find Admin"));
 	}
+	
 
 	public PharmacyResponse findPharmacyByAdminId(String adminId) {
 		Admin admin = adminRepository.findById(adminId)
@@ -53,7 +55,22 @@ public class PharmacyService {
 		}
 		return pharmacyMapper.mapToPharmacyResponse(pharmacy);
 	}
+	
+	
+
+	public PharmacyResponse updatePharmacy(PharmacyRequest pharmacyRequest, String pharmacyId) {
+
+		return pharmacyRepository.findById(pharmacyId)
+				.map(exPharmacy ->{
+					pharmacyMapper.mapToPharmacy(pharmacyRequest, exPharmacy);
+					return pharmacyRepository.save(exPharmacy);
+				})
+				.map(pharmacyMapper::mapToPharmacyResponse)
+				.orElseThrow(() -> new PharmacyNotFoundByIdException("Failed to update Pharmacy"));
+	}
 
 }
+
+
 
 
