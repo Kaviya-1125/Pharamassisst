@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +41,13 @@ public class PharmacyController {
 	{
 		PharmacyResponse response = pharmacyService.findPharmacyByAdminId(adminId);
 		return responseBuilder.success(HttpStatus.FOUND,"Pharmacy associated with admin found",response );
+	}
+	
+	@PutMapping("/pharmacies/{pharmacyId}")
+	public ResponseEntity<ResponseStructure<PharmacyResponse>> updatePharmacy(@RequestBody PharmacyRequest pharmacyRequest,@PathVariable String pharmacyId)
+	{
+		PharmacyResponse response = pharmacyService.updatePharmacy(pharmacyRequest, pharmacyId);
+		return responseBuilder.success(HttpStatus.OK,"Pharmacy Updated", response);
 	}
 	
 
