@@ -1,7 +1,10 @@
 package com.example.pharmassisst.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +35,12 @@ public class PatientController {
 		 PatientResponse response = patientService.addPatient(patientRequest,pharmacyId);
 		 return responseBuilder.success(HttpStatus.CREATED,"Patient registered",response);
 	}	
+	
+	@GetMapping("/pharmacies/{pharmacyId}/patients")
+	public ResponseEntity<ResponseStructure<List<PatientResponse>>> findAllPatientsByPharmacyId(@PathVariable String pharmacyId) {
+	    List<PatientResponse> response = patientService.findAllPatientByPharmacyId(pharmacyId);
+	    return responseBuilder.success(HttpStatus.FOUND, "Patients associated with the pharmacyId found", response);
+	}
 	
 
 }

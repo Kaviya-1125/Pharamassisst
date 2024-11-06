@@ -1,8 +1,11 @@
 package com.example.pharmassisst.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.pharmassisst.entity.Patient;
+import com.example.pharmassisst.exception.NoPatientsFoundException;
 import com.example.pharmassisst.exception.PharmacyNotFoundByIdException;
 import com.example.pharmassisst.mapper.PatientMapper;
 import com.example.pharmassisst.repository.PatientRepository;
@@ -29,16 +32,27 @@ public class PatientService {
 
 	public PatientResponse addPatient(@Valid PatientRequest patientRequest, String pharmacyId) {
 
-	return pharmacyRepository.findById(pharmacyId)
-			.map(pharmacy  ->{
-				Patient patient=patientMapper.mapToPatient(patientRequest, new Patient());
+		return pharmacyRepository.findById(pharmacyId)
+				.map(pharmacy  ->{
+					Patient patient=patientMapper.mapToPatient(patientRequest, new Patient());
 					patient.setPharmacy(pharmacy);
 					pharmacy.getPatients().add(patient);
 					patientRepository.save(patient);
-				return patientMapper.mapToPatientResponse(patient);
+					return patientMapper.mapToPatientResponse(patient);
 				})
-			.orElseThrow(() ->new PharmacyNotFoundByIdException("Failed to find Pharmacy"));
+				.orElseThrow(() ->new PharmacyNotFoundByIdException("Failed to find Pharmacy"));
 
 
-			}
 	}
+
+
+	public List<PatientResponse> findAllPatientByPharmacyId(String pharmacyId) {
+		return pharmacyRepository.findById(pharmacyId)
+				.map(pharmacy -> patientRepository.findByPharmacy(pharmacy))
+				.filter(patients -> !patients.isEmpty())
+				.orElseThrow(() -> new NoPatientsFoundException("Failed to find patients associated with the pharmacyID: " + pharmacyId))
+				.stream()
+				.map(patientMapper::mapToPatientResponse)
+				.toList();
+	}
+}
