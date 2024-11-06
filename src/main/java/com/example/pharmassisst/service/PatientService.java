@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.pharmassisst.entity.Patient;
 import com.example.pharmassisst.exception.NoPatientsFoundException;
+import com.example.pharmassisst.exception.PatientNotFoundByIdException;
 import com.example.pharmassisst.exception.PharmacyNotFoundByIdException;
 import com.example.pharmassisst.mapper.PatientMapper;
 import com.example.pharmassisst.repository.PatientRepository;
@@ -54,5 +55,18 @@ public class PatientService {
 				.stream()
 				.map(patientMapper::mapToPatientResponse)
 				.toList();
+	}
+
+
+	public PatientResponse updatePatient(PatientRequest patientRequest, String patientId) {
+
+		return 	patientRepository.findById(patientId)
+				.map(exPatient -> {
+					patientMapper.mapToPatient(patientRequest, exPatient);
+					return patientRepository.save(exPatient);
+				})
+				.map(patientMapper::mapToPatientResponse)
+				.orElseThrow(() -> new PatientNotFoundByIdException("Failed to update Patient"));
+
 	}
 }
