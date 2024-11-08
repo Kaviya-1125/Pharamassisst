@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.pharmassisst.exception.InvalidDataException;
 import com.example.pharmassisst.exception.InvalidDateFormatException;
 import com.example.pharmassisst.exception.InvalidFileFormatException;
+import com.example.pharmassisst.exception.NoMedicineFoundException;
 import com.example.pharmassisst.exception.PatientNotFoundByIdException;
 import com.example.pharmassisst.service.MedicineService;
 import com.example.pharmassisst.utility.AppResponseBuilder;
@@ -52,6 +53,13 @@ public class MedicineExceptionHandler {
 		
 	}
 	
+	
+	@ExceptionHandler(NoMedicineFoundException.class)
+	public ResponseEntity<ErrorStructure> handleMedicineFoundException(NoMedicineFoundException ex) {
+		
+		return responseBuilder.error(HttpStatus.BAD_REQUEST, ex.getMessage(), "Invalid Data Format");
+		
+	}
 	
 
 
