@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Row;
@@ -18,9 +19,12 @@ import com.example.pharmassisst.enums.Form;
 import com.example.pharmassisst.exception.InvalidDataException;
 import com.example.pharmassisst.exception.InvalidDateFormatException;
 import com.example.pharmassisst.exception.InvalidFileFormatException;
+import com.example.pharmassisst.exception.NoMedicineFoundException;
 import com.example.pharmassisst.exception.PharmacyNotFoundByIdException;
+import com.example.pharmassisst.mapper.MedicineMapper;
 import com.example.pharmassisst.repository.MedicineRepository;
 import com.example.pharmassisst.repository.PharmacyRepository;
+import com.example.pharmassisst.responsedtos.MedicineResponse;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -30,12 +34,14 @@ public class MedicineService {
 
 	private final MedicineRepository medicineRepository;
 	private final PharmacyRepository pharmacyRepository;
+	private final MedicineMapper medicineMapper;
 
 
-	public MedicineService(MedicineRepository medicineRepository,PharmacyRepository pharmacyRepository) {
+	public MedicineService(MedicineRepository medicineRepository,PharmacyRepository pharmacyRepository,MedicineMapper medicineMapper) {
 		super();
 		this.medicineRepository = medicineRepository;
 		this.pharmacyRepository = pharmacyRepository;
+		this.medicineMapper=medicineMapper;
 	}
 
 	@Transactional
@@ -107,6 +113,22 @@ public class MedicineService {
 		medicineRepository.save(medicine);
 
 	}
+	
+	public List<MedicineResponse> findMedicineByNameOrIngredients(String text) {
+
+		text = "%" +text+"%";
+		List<Medicine> medicines = medicineRepository.findByNameLikeIgnoreCaseOrIngredientsLikeIgnoreCase(text, text);
+		if(medicines.isEmpty())
+			throw new NoMedicineFoundException("No medicine found");
+		else
+			return	medicines.stream()
+					.map(medicineMapper :: mapToMedicineResponse)
+					.toList();
+	}
+	
+	
+	
+	
 	
 	
 
