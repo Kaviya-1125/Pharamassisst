@@ -29,21 +29,21 @@ public class AdminController {
 		this.responseBuilder = responseBuilder;
 	}
 	
-	@PostMapping("/admins")
+	@PostMapping("/register")
 	public ResponseEntity<ResponseStructure<AdminResponse>> saveAdmin(@RequestBody @Valid AdminRequest adminRequest) {
 	
 		AdminResponse response =  adminService.saveAdmin(adminRequest);
 		return responseBuilder.success(HttpStatus.CREATED, "Admin Created",response);
 	}
 	
-	@GetMapping("/admins/{adminId}")
+	@GetMapping("/find-admins/{adminId}")
 	public ResponseEntity<ResponseStructure<AdminResponse>> findAdmin(@PathVariable String adminId) {
 		
 		AdminResponse response = adminService.findAdmin(adminId);
 		return responseBuilder.success(HttpStatus.FOUND,"Admin Found", response);
 	}
 	
-	@PutMapping("/admins/{adminId}")
+	@PutMapping("/update-admins/{adminId}")
 	public ResponseEntity<ResponseStructure<AdminResponse>> updateAdmin(@RequestBody AdminRequest adminRequest,@PathVariable String adminId) {
 		
 		AdminResponse response = adminService.updateAdmin(adminRequest, adminId);
